@@ -4,4 +4,4 @@ Este projeto não visa ser um serviço de conferencia ou video chat!
 Ele apenas gravará o áudio em uma aba do navegador, independente de como a chamada será feita (Zoom, Teams, Slack, RocketChat, etc).
 
 Um protótipo da ideia geral (pelo menos a parte dos guests) pode ser vista aqui:
-https://www.figma.com/proto/Ipk3BjG2DFtEeVJumsFUxE/PodRecorder-Prototype?node-id=2%3A142&viewport=729%2C492%2C1&scaling=scale-down
+https://www.figma.com/proto/Ipk3BjG2DFtEeVJumsFUxE/PodRecorder-Prototype
