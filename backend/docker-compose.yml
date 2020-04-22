@@ -1,9 +1,11 @@
+# workaround for postgres docker-compose runing on docker for windows
+# https://forums.docker.com/t/data-directory-var-lib-postgresql-data-pgdata-has-wrong-ownership/17963/20
 # Use postgres/example user/password credentials
 version: '3.7'
 
 services:
   db:
-    image: postgres
+    image: postgres:alpine
     container_name: recorderpod
     restart: always
     volumes:
@@ -12,8 +14,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /tmp #hack for docker on windows
     ports:
       - ${POSTGRES_PORT}:5432
-
-volumes:
-  mydata:

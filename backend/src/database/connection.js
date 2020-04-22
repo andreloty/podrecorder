@@ -1,4 +1,4 @@
-import knex from 'knex'
+const knex = require('knex')
 
 const knexfile = require('../../knexfile')
 
@@ -7,4 +7,4 @@ const config = knexfile[environment]
 
 const knexConfig = knex(config)
 
-export default knexConfig
+module.exports = knexConfig

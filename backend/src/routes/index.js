@@ -1,14 +1,14 @@
-import express from 'express'
-import authMiddleware from '../middleware/auth'
-import AccountController from '../controllers/AccountController'
-
+const express = require('express')
 const router = express.Router()
+const userController = require('../controller/userController')
 
-router.post('/v1/signup', AccountController.signup)
-router.post('/v1/login', AccountController.login)
+// root
+router.get('/', function (req, res, next) {
+  res.render('index', { title: 'Express' })
+})
 
-router.use(authMiddleware)
+// user
+router.post('/api/v1/signup', userController.signup)
+router.post('/api/v1/login', userController.login)
 
-// routes that should be protected must be bellow authMiddleware
-
-export default router
+module.exports = router

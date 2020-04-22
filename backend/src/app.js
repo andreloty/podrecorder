@@ -1,30 +1,20 @@
-import express from 'express'
-import logger from 'morgan'
-import dotenv from 'dotenv'
+const express = require('express')
+const path = require('path')
+const cookieParser = require('cookie-parser')
+const logger = require('morgan')
+const cors = require('cors')
 
-// routes import
-import indexRouter from './routes/index'
+const indexRouter = require('./routes/index')
 
-dotenv.config({
-  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
-})
+const app = express()
 
-class App {
-  constructor() {
-    this.express = express()
-    this.middlewares()
-    this.routes()
-  }
+app.use(cors())
+app.use(logger('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
 
-  middlewares() {
-    this.express.use(express.json())
-    this.express.use(express.urlencoded({ extended: true }))
-    this.express.use(logger('dev'))
-  }
+app.use('/', indexRouter)
 
-  routes() {
-    this.express.use(indexRouter)
-  }
-}
-
-export default new App().express
+module.exports = app

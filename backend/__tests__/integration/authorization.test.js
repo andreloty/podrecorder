@@ -1,15 +1,14 @@
-/* eslint-disable no-undef */
-import request from 'supertest'
-// import knex from '../../src/database/connection'
-import app from '../../src/app'
+const request = require('supertest')
+const app = require('../../src/app')
+const knex = require('../../src/database/connection')
 
-// beforeEach(async () => {
-//   jest.setTimeout(10000)
-// })
+beforeEach(async () => {
+  jest.setTimeout(10000)
+})
 
 describe('Authorization (signup and login)', () => {
   it('should create a new user profile for authentication', async () => {
-    const response = await request(app).post('/v1/signup').send({
+    const response = await request(app).post('/api/v1/signup').send({
       firstName: 'Andre',
       lastName: 'Lima',
       email: 'email@email.com',
@@ -22,7 +21,7 @@ describe('Authorization (signup and login)', () => {
   })
 
   it('should receive a token when pass credentials for authentication', async () => {
-    const response = await request(app).post('/v1/login').send({
+    const response = await request(app).post('/api/v1/login').send({
       email: 'email@email.com',
       password: '123456'
     })
