@@ -7,7 +7,6 @@
 const app = require('../app')
 const debug = require('debug')('backend:server')
 const http = require('http')
-var io = require('socket.io')(http)
 
 /**
  * Get port from environment and store in Express.
@@ -21,6 +20,10 @@ app.set('port', port)
  */
 
 const server = http.createServer(app)
+const io = require('socket.io')(server)
+io.on('connection', (socket) => {
+  debug('new user conected: ' + socket.id)
+})
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -79,10 +82,6 @@ function onError(error) {
 /**
  * Event listener for HTTP server "listening" event.
  */
-
-io.on('connection', (socket) => {
-  console.log('a user connected')
-})
 
 function onListening() {
   const addr = server.address()
