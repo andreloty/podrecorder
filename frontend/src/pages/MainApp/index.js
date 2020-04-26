@@ -1,26 +1,29 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import { useHistory } from 'react-router-dom'
-import { logout } from '../../auth'
+import AuthContext from '../../services/auth'
+import Copyright from '../Shared/copyright'
+import Logout from '../Shared/logout'
 
-export default function Home() {
+export default function MainApp() {
   const history = useHistory()
+  const { user } = useContext(AuthContext)
 
-  const logOut = (e) => {
-    e.preventDefault()
-    logout()
-    history.push('/')
+  const newRecording = () => {
+    history.push('/new')
   }
 
   return (
     <div>
       <Typography component="h1" variant="h5">
-        Main App
+        Olá {user.firstName} {user.lastName}
       </Typography>
-      <Link href="#" onClick={logOut} variant="body2">
-        Sair
+      <Link href="#" onClick={newRecording} variant="body2">
+        Fazer uma nova gravação
       </Link>
+      <Logout />
+      <Copyright />
     </div>
   )
 }

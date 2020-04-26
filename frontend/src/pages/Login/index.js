@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -7,26 +7,17 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import Link from '@material-ui/core/Link'
 import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import Typography from '@material-ui/core/Typography'
+import Collapse from '@material-ui/core/Collapse'
+import Alert from '@material-ui/lab/Alert'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import { useHistory } from 'react-router-dom'
-import api from '../../services/api'
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  )
-}
+import Copyright from '../Shared/copyright'
+import AuthContext from '../../services/auth'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -54,8 +45,11 @@ function initialState() {
 
 export default function Login() {
   const classes = useStyles()
+  const { login } = useContext(AuthContext)
 
   const [user, setUser] = useState(initialState)
+  const [open, setOpen] = useState(false)
+  const [modalMsg, setModalMsg] = useState('')
 
   function onChange(e) {
     let { value, name } = e.target
@@ -81,21 +75,40 @@ export default function Login() {
   async function handleLogin(e) {
     e.preventDefault()
     try {
-      const response = await api.post('/api/v1/login', { email: user.email, password: user.password })
-
-      if (user.remember === 'remember') {
-        localStorage.setItem('token', response.data.token)
-      } else {
-        sessionStorage.setItem('token', response.data.token)
-      }
+      await login(user.email, user.password, user.remember)
 
       history.push('/app')
-    } catch (error) {}
+    } catch (error) {
+      setModalMsg(error)
+      setOpen(true)
+      setTimeout(() => {
+        setOpen(false)
+      }, 5000)
+    }
   }
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
+      <Collapse in={open}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false)
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {modalMsg}
+        </Alert>
+      </Collapse>
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -148,9 +161,7 @@ export default function Login() {
           </Grid>
         </form>
       </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
+      <Copyright />
     </Container>
   )
 }

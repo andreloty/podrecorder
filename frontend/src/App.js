@@ -1,6 +1,11 @@
 import React from 'react'
-import Routes from './routes'
+import Routes from './routes/routes'
+import { AuthProvider } from './services/auth'
 
-const App = () => <Routes />
+const App = () => (
+  <AuthProvider>
+    <Routes />
+  </AuthProvider>
+)
 
 export default App

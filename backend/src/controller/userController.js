@@ -28,15 +28,20 @@ module.exports = {
       const user = await userService.login(email, password)
 
       if (!user) {
-        return res.status(400).json({ message: 'Invalid email or password!' })
+        return res.status(400).json({ msg: 'Email ou senha inválidos!' })
       }
 
       const token = userService.generateToken(
         user.id,
-        user.firstName,
-        user.lastName
+        user.first_name,
+        user.last_name
       )
-      return res.status(200).json({ id: user.id, token })
+      return res.status(200).json({
+        id: user.id,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        token
+      })
     } catch (error) {
       return res.status(500).json({ msg: error.message })
     }

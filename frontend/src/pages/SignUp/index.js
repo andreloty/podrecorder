@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import TextField from '@material-ui/core/TextField'
 import Link from '@material-ui/core/Link'
-import Box from '@material-ui/core/Box'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
@@ -15,20 +14,8 @@ import Alert from '@material-ui/lab/Alert'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import { useHistory } from 'react-router-dom'
+import Copyright from '../Shared/copyright'
 import api from '../../services/api'
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  )
-}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -91,16 +78,11 @@ export default function Login() {
 
       history.push('/app')
     } catch (error) {
-      if (error.response.data.msg) {
-        setModalMsg(error.response.data.msg)
-        setOpen(true)
-        setTimeout(() => {
-          setOpen(false)
-        }, 5000)
-      } else {
-        setModalMsg(error.message)
-        setOpen(true)
-      }
+      setModalMsg(error)
+      setOpen(true)
+      setTimeout(() => {
+        setOpen(false)
+      }, 5000)
     }
   }
 
@@ -201,9 +183,7 @@ export default function Login() {
           </Grid>
         </form>
       </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
+      <Copyright />
     </Container>
   )
 }
