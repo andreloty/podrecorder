@@ -23,6 +23,9 @@ const server = http.createServer(app)
 const io = require('socket.io')(server)
 io.on('connection', (socket) => {
   debug('new user conected: ' + socket.id)
+  socket.on('disconnect', () => {
+    debug('new user conected: ' + socket.id)
+  })
 })
 
 /**

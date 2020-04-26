@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import Grid from '@material-ui/core/Grid'
 import { useHistory } from 'react-router-dom'
 import AuthContext from '../../services/auth'
 import Copyright from '../Shared/copyright'
@@ -15,7 +16,7 @@ export default function MainApp() {
   }
 
   return (
-    <div>
+    <Grid container direction="column" justify="center" alignItems="center">
       <Typography component="h1" variant="h5">
         Olá {user.firstName} {user.lastName}
       </Typography>
@@ -24,6 +25,6 @@ export default function MainApp() {
       </Link>
       <Logout />
       <Copyright />
-    </div>
+    </Grid>
   )
 }
