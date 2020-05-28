@@ -1,7 +1,7 @@
-const userService = require('../services/userService')
+const userService = require('../services/UserService')
 
 module.exports = {
-  async signup(req, res) {
+  async signup (req, res) {
     const { firstName, lastName, email, password } = req.body
 
     try {
@@ -21,7 +21,7 @@ module.exports = {
     }
   },
 
-  async login(req, res) {
+  async login (req, res) {
     const { email, password } = req.body
 
     try {

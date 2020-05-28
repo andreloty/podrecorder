@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 const bcrypt = require('bcrypt')
-const userService = require('../../src/services/userService')
+const userService = require('../../src/services/UserService')
 
 describe('User services', () => {
   it('should encrypt user password', async () => {
