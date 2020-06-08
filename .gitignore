@@ -104,4 +104,5 @@ dist
 .tern-port
 
 # sqlite3 integration db test
-backend/src/database/db.sqlite
+backend/src/database/*.sqlite
+backend/src/database/*.sqlite3
