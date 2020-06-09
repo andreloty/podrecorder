@@ -106,3 +106,4 @@ dist
 # sqlite3 integration db test
 backend/src/database/*.sqlite
 backend/src/database/*.sqlite3
+backend/.vscode/settings.json
