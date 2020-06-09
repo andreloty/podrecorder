@@ -18,11 +18,37 @@ describe('User services', () => {
     expect(isEqual).toBe(true)
   })
 
+  it('should return user data from token', () => {
+    const user = {
+      id: 444,
+      firstName: 'Andre',
+      lastName: 'Lima',
+      email: 'teste@email.com'
+    }
+
+    const userTokenGenerate = userService.generateToken(
+      user.id,
+      user.firstName,
+      user.lastName,
+      user.email
+    )
+
+    const authorization = 'Bearer ' + userTokenGenerate
+
+    const userInfoFromToken = userService.getUserInfo(authorization)
+
+    expect(userInfoFromToken.id).toBe(user.id)
+    expect(userInfoFromToken.firstName).toBe(user.firstName)
+    expect(userInfoFromToken.lastName).toBe(user.lastName)
+    expect(userInfoFromToken.email).toBe(user.email)
+  });
+
+
   it('should create new user in database', async () => {
     const id = await userService.signup(
       'Andre',
       'Lima',
-      'andre@email.com',
+      'teste@email.com',
       123456
     )
 
@@ -30,7 +56,7 @@ describe('User services', () => {
   })
 
   it('should return user from database', async () => {
-    const user = await userService.login('andre@email.com', 123456)
+    const user = await userService.login('teste@email.com', 123456)
 
     expect(user.id).toBeGreaterThan(0)
   })

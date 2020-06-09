@@ -5,6 +5,6 @@ export default {
     )
   },
   newSessionCode: () => {
-    return Math.floor(100 + Math.random() * 9000)
+    return `${Math.floor(100 + Math.random() * 999999)}`.padStart(6, '0')
   },
 }

@@ -1,10 +1,5 @@
 const request = require('supertest')
 const app = require('../../src/app')
-const knex = require('../../src/database/connection')
-
-beforeEach(async () => {
-  jest.setTimeout(10000)
-})
 
 describe('Authorization (signup and login)', () => {
   it('should create a new user profile for authentication and receive a token', async () => {
@@ -31,8 +26,3 @@ describe('Authorization (signup and login)', () => {
     expect(response.body.token).toBeDefined()
   })
 })
-
-// afterAll(async (done) => {
-//   await knex.default.destroy()
-//   done()
-// })

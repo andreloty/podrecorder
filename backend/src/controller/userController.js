@@ -7,7 +7,7 @@ module.exports = {
     try {
       const id = await userService.signup(firstName, lastName, email, password)
 
-      const token = userService.generateToken(id, firstName, lastName)
+      const token = userService.generateToken(id, firstName, lastName, email)
 
       return res.status(201).json({ id, token })
     } catch (error) {
@@ -34,7 +34,8 @@ module.exports = {
       const token = userService.generateToken(
         user.id,
         user.first_name,
-        user.last_name
+        user.last_name,
+        user.email
       )
       return res.status(200).json({
         id: user.id,
