@@ -17,7 +17,8 @@ module.exports = {
       'email': email,
       'session': this.newSessionId(),
       'code': this.newSessionCode(),
-      'is_active': true
+      'is_active': true,
+      'is_recording': false
     }
 
     const [id] = await knex(recordingTable).returning('id').insert(data)
@@ -38,7 +39,7 @@ module.exports = {
     const activeSessionRecording = await this.getActiveSessionRecording(email)
 
     if (activeSessionRecording) {
-      await knex(recordingTable).where({ 'id': activeSessionRecording.id }).update({ 'is_active': false })
+      await knex(recordingTable).where({ 'id': activeSessionRecording.id }).update({ 'is_active': false, 'is_recording': false })
     }
   }
 }

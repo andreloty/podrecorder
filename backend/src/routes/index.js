@@ -1,12 +1,11 @@
 const express = require('express')
 const router = express.Router()
+const homeController = require('../controller/homeController')
 const userController = require('../controller/userController')
 const recordingController = require('../controller/recordingController')
 
 // root
-router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' })
-})
+router.get('/', homeController.index)
 
 // user
 router.post('/api/v1/signup', userController.signup)

@@ -7,6 +7,7 @@
 const app = require('../app')
 const debug = require('debug')('backend:server')
 const http = require('http')
+const socketService = require('../services/SocketService')
 
 /**
  * Get port from environment and store in Express.
@@ -20,12 +21,10 @@ app.set('port', port)
  */
 
 const server = http.createServer(app)
+server.keepAliveTimeout = 0;
 const io = require('socket.io')(server)
 io.on('connection', (socket) => {
-  debug('new user conected: ' + socket.id)
-  socket.on('disconnect', () => {
-    debug('new user conected: ' + socket.id)
-  })
+  socketService.manageSocket(socket)
 })
 
 /**
@@ -40,7 +39,7 @@ server.on('listening', onListening)
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
+function normalizePort (val) {
   const port = parseInt(val, 10)
 
   if (isNaN(port)) {
@@ -60,7 +59,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError (error) {
   if (error.syscall !== 'listen') {
     throw error
   }
@@ -72,11 +71,9 @@ function onError(error) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges')
       process.exit(1)
-      break
     case 'EADDRINUSE':
       console.error(bind + ' is already in use')
       process.exit(1)
-      break
     default:
       throw error
   }
@@ -86,7 +83,7 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
+function onListening () {
   const addr = server.address()
   const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
   debug('Listening on ' + bind)

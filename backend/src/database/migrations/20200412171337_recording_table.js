@@ -12,7 +12,8 @@ exports.up = async (knex) => {
     table.string('email', 255).notNullable()
     table.uuid('session').notNullable()
     table.string('code', 6).notNullable()
-    table.boolean('is_active', 255).notNullable()
+    table.boolean('is_active').notNullable()
+    table.boolean('is_recording').notNullable()
   })
 }
 
