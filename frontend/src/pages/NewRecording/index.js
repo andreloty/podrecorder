@@ -22,10 +22,12 @@ export default function NewRecording () {
   const [users, setUsers] = useState([user]);
   const [room, setRoom] = useState({
     code: '',
+    session: '',
     url: ''
   });
 
   useEffect(() => {
+
     const getSession = async () => {
       const resp = await getActiveSession()
 
@@ -38,46 +40,73 @@ export default function NewRecording () {
       } else {
         setRoom({
           code: resp.data.code,
+          session: resp.data.session,
           url: `${process.env.REACT_APP_BASE_URL}/${resp.data.session}`
         })
         setShowData('visible')
+
+        joinToSession(room.session, user)
       }
     }
 
     getSession()
 
     socket.on('userConnected', () => {
-      setConnectedText(connected)
+      joinToSession(room.session, user)
     })
+  }, [room.session, user])
 
-    socket.on('disconnect', (guest) => {
-      setConnectedText(desconnected)
-    })
+  const joinToSession = (session, user) => {
+    if (session && user) {
+      socket.emit('joinToSession', session, user)
+    }
+  }
 
-    socket.on('newGuestOn', (guest) => {
-      if (guest) {
+  socket.on('disconnect', (guest) => {
+    setConnectedText(desconnected)
+  })
+
+  socket.on('newGuestOn', (guest) => {
+    if (guest) {
+      if (users.find((v) => v.firstName !== user.firstName && v.lastName !== user.lastName)) {
         users.push(guest)
-        setUsers(users)
       }
-    })
-  }, [users])
+      setUsers(users)
+      setConnectedText(connected)
+    }
+  })
+
+  function ListItem (props) {
+    return <li>{props.value.firstName} {props.value.lastName}</li>;
+  }
+
+  function UserList (props) {
+    const users = props.users;
+    if (users && users.length > 0) {
+      const listItems = users.map((user, index) =>
+        <ListItem key={index} value={user} />
+      );
+      return (
+        <ol>
+          {listItems}
+        </ol>
+      );
+    }
+
+    return <br />
+  }
 
   return (
     <Box visibility={showData}>
       <Grid container direction="column" justify="center" alignItems="center">
         {connectedText}
         <Typography component="h5" variant="h5">
-          <p>Pessoas conectadas no momento: 1</p>
-          <p>Convidar pessoas:</p>
-          <p>Sala: {room.url}</p>
-          <p>Código: {room.code}</p>
-          <ol>
-            {users.map((u, i) => (
-              <li key={i}>
-                {u.firstName} {u.lastName}
-              </li>
-            ))}
-          </ol>
+          <p>
+            Pessoas conectadas no momento: {users.length} <br />
+            Convidar pessoas:<br />
+            Sala: {room.url}<br />
+            Código: {room.code}</p>
+          <UserList users={users} />
         </Typography>
         <Logout />
         <Copyright />
