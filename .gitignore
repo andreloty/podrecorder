@@ -107,3 +107,4 @@ dist
 backend/src/database/*.sqlite
 backend/src/database/*.sqlite3
 backend/.vscode/settings.json
+frontend/.vscode/settings.json
