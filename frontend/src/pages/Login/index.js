@@ -13,8 +13,8 @@ import Collapse from '@material-ui/core/Collapse'
 import Alert from '@material-ui/lab/Alert'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
+import { makeStyles } from '@material-ui/core/styles'
 import { useHistory } from 'react-router-dom'
 import Copyright from '../Shared/copyright'
 import AuthContext from '../../services/auth'
@@ -39,11 +39,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function initialState() {
+function initialState () {
   return { email: '', password: '', remember: '' }
 }
 
-export default function Login() {
+export default function Login () {
   const classes = useStyles()
   const { login } = useContext(AuthContext)
 
@@ -51,7 +51,7 @@ export default function Login() {
   const [open, setOpen] = useState(false)
   const [modalMsg, setModalMsg] = useState('')
 
-  function onChange(e) {
+  function onChange (e) {
     let { value, name } = e.target
 
     setUser({
@@ -67,12 +67,7 @@ export default function Login() {
     history.push('/signup')
   }
 
-  // const forgoten = (e) => {
-  //   e.preventDefault()
-  //   history.push('/forgoten')
-  // }
-
-  async function handleLogin(e) {
+  async function handleLogin (e) {
     e.preventDefault()
     try {
       await login(user.email, user.password, user.remember)

@@ -25,13 +25,17 @@ module.exports = {
   },
 
   async login (email, pwd) {
-    const user = await knex(userTable).where('email', email).select('*').first()
+    try {
+      const user = await knex(userTable).where('email', email).select('*').first()
 
-    if (!user || !this.compareHash(pwd.toString(), user.password)) {
-      return null
+      if (!user || !this.compareHash(pwd.toString(), user.password)) {
+        return null
+      }
+
+      return user
+    } catch (error) {
+      throw error
     }
-
-    return user
   },
 
   async compareHash (pwd, hash) {
@@ -44,8 +48,14 @@ module.exports = {
     return token
   },
 
-  getUserInfo (authorization) {
+  getTokenFromAuthorizationHeader (authorization) {
     const token = authorization.split(' ')[1]
+    return token
+  },
+
+  getUserInfo (authorization) {
+    const token = this.getTokenFromAuthorizationHeader(authorization)
+
     const decoded = jwt.verify(token, mySecret)
 
     return decoded

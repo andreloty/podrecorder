@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import Typography from '@material-ui/core/Typography'
 //import { useHistory } from 'react-router-dom'
 import AuthContext from '../../services/auth'
-import { getActiveSession } from '../../services/recording';
+import { getActiveSession } from '../../services/recording'
 import Copyright from '../Shared/copyright'
 import Logout from '../Shared/logout'
 import socket from '../../services/socket'
@@ -41,7 +41,7 @@ export default function NewRecording () {
         setRoom({
           code: resp.data.code,
           session: resp.data.session,
-          url: `${process.env.REACT_APP_BASE_URL}/${resp.data.session}`
+          url: `${process.env.REACT_APP_BASE_URL}/recording/${resp.data.session}`
         })
         setShowData('visible')
 

@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const knex = require('../database/connection')
+const knex = require('../database/connection');
 
 const recordingTable = 'recording'
 
@@ -41,5 +41,12 @@ module.exports = {
     if (activeSessionRecording) {
       await knex(recordingTable).where({ 'id': activeSessionRecording.id }).update({ 'is_active': false, 'is_recording': false })
     }
+  },
+
+  async validateSession (session, code) {
+    const filter = { 'session': session, 'code': code }
+    const validated = await knex(recordingTable).where(filter).select('is_active').first()
+
+    return validated
   }
 }

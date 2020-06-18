@@ -31,3 +31,19 @@ export const getActiveSession = async () => {
     }
   }
 }
+
+export const validateSession = async (session, code) => {
+  try {
+    const response = await api
+      .post('/api/v1/recording/validate-session', { session, code })
+    return {
+      error: null,
+      data: response.data.isValid
+    }
+  } catch (error) {
+    return {
+      error: error,
+      data: null
+    }
+  }
+}

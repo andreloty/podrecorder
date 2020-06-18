@@ -24,5 +24,20 @@ module.exports = {
 
       return res.status(500).json({ msg: 'Erro desconhecido!' })
     }
+  },
+
+  async session (req, res) {
+
+  },
+
+  async validateSession (req, res) {
+    try {
+      const { session, code } = req.body
+      const is_active = await roomService.validateSession(session, code)
+
+      return res.status(200).json({ isValid: is_active })
+    } catch (error) {
+      return res.status(500).json({ msg: 'Erro desconhecido!' })
+    }
   }
 }
