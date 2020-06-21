@@ -41,7 +41,7 @@ export default function NewRecording () {
         setRoom({
           code: resp.data.code,
           session: resp.data.session,
-          url: `${process.env.REACT_APP_BASE_URL}/recording/${resp.data.session}`
+          url: `${process.env.REACT_APP_BASE_URL}/session/${resp.data.session}`
         })
         setShowData('visible')
 

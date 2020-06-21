@@ -43,7 +43,7 @@ const Routes = () => {
         <PublicRoute exact path="/" component={() => <Home />} />
         <PublicRoute path="/login" component={() => <Login />} />
         <PublicRoute path="/signup" component={() => <SignUp />} />
-        <PublicRoute path="/session" component={() => <Session />} />
+        <PublicRoute path="/session/:id" component={() => <Session />} />
         <PublicRoute path="/active-session" component={() => <ActiveSession />} />
         <PrivateRoute path="/app" component={() => <MainApp />} />
         <PrivateRoute path="/new" component={() => <NewRecording />} />

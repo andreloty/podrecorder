@@ -20,6 +20,12 @@ import Copyright from '../Shared/copyright'
 import AuthContext from '../../services/auth'
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    '& .MuiTextField-root': {
+      margin: theme.spacing(1),
+      width: 200,
+    },
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
@@ -50,6 +56,7 @@ export default function Login () {
   const [user, setUser] = useState(initialState)
   const [open, setOpen] = useState(false)
   const [modalMsg, setModalMsg] = useState('')
+  const [formValid, setFormValid] = useState(true)
 
   function onChange (e) {
     let { value, name } = e.target
@@ -69,10 +76,20 @@ export default function Login () {
 
   async function handleLogin (e) {
     e.preventDefault()
-    try {
-      await login(user.email, user.password, user.remember)
+    setFormValid(e.currentTarget.reportValidity())
 
-      history.push('/app')
+    try {
+      if (!e.currentTarget.reportValidity()) {
+        setModalMsg('Todos os campos devem ser preenchidos!')
+        setOpen(true)
+        setTimeout(() => {
+          setOpen(false)
+        }, 5000)
+      } else {
+        await login(user.email, user.password, user.remember)
+
+        history.push('/app')
+      }
     } catch (error) {
       setModalMsg(error)
       setOpen(true)
@@ -124,6 +141,8 @@ export default function Login () {
             autoFocus
             onChange={onChange}
             value={user.email}
+            error={!formValid}
+            helperText="Todos os campos são obrigatórios!"
           />
           <TextField
             variant="outlined"
@@ -137,6 +156,8 @@ export default function Login () {
             autoComplete="current-password"
             onChange={onChange}
             value={user.password}
+            error={!formValid}
+            helperText="Todos os campos são obrigatórios!"
           />
           <FormControlLabel control={<Checkbox onChange={onChange} name="remember" value="remember" color="primary" />} label="Remember me" />
           <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>

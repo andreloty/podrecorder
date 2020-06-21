@@ -10,9 +10,10 @@ import CloseIcon from '@material-ui/icons/Close'
 import Container from '@material-ui/core/Container'
 import { makeStyles } from '@material-ui/core/styles'
 import Copyright from '../Shared/copyright'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import dotenv from 'dotenv'
 import { validateSession } from '../../services/recording'
+import { addToStorage } from '../../services/storage'
 
 dotenv.config()
 
@@ -39,9 +40,11 @@ function initialState () {
 export default function Session () {
   const classes = useStyles()
 
+  const [formValid, setFormValid] = useState(true)
   const [user, setUser] = useState(initialState)
   const [open, setOpen] = useState(false)
   const [modalMsg, setModalMsg] = useState('')
+  const { id } = useParams();
 
   function onChange (e) {
     let { value, name } = e.target
@@ -56,11 +59,30 @@ export default function Session () {
 
   async function handleSession (e) {
     e.preventDefault()
-    try {
-      const isValid = await validateSession(user.name, user.code)
+    setFormValid(e.currentTarget.reportValidity())
 
-      if (isValid) {
-        history.push('/app')
+    try {
+      if (!e.currentTarget.reportValidity()) {
+        setModalMsg('Todos os campos devem ser preenchidos!')
+        setOpen(true)
+        setTimeout(() => {
+          setOpen(false)
+        }, 5000)
+      } else {
+        const response = await validateSession(id, user.code)
+
+        if (response.data) {
+          addToStorage('sessionId', id, true)
+          addToStorage('name', user.name, true)
+          addToStorage('code', user.code, true)
+          history.push('/active-session')
+        } else {
+          setModalMsg('Sessão inválida!')
+          setOpen(true)
+          setTimeout(() => {
+            setOpen(false)
+          }, 5000)
+        }
       }
     } catch (error) {
       setModalMsg(error)
@@ -108,6 +130,8 @@ export default function Session () {
               autoFocus
               onChange={onChange}
               value={user.name}
+              error={!formValid}
+              helperText="Todos os campos são obrigatórios!"
             />
             <TextField
               variant="outlined"
@@ -120,6 +144,8 @@ export default function Session () {
               autoComplete="code"
               onChange={onChange}
               value={user.code}
+              error={!formValid}
+              helperText="Todos os campos são obrigatórios!"
             />
             <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
               Participar da Gravação

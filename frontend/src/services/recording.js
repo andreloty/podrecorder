@@ -41,9 +41,10 @@ export const validateSession = async (session, code) => {
       data: response.data.isValid
     }
   } catch (error) {
-    return {
+    const exception = {
       error: error,
       data: null
     }
+    throw exception
   }
 }
