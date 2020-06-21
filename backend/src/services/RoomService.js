@@ -45,8 +45,8 @@ module.exports = {
 
   async validateSession (session, code) {
     const filter = { 'session': session, 'code': code }
-    const validated = await knex(recordingTable).where(filter).select('is_active').first()
+    const firstResult = await knex(recordingTable).where(filter).select('is_active').first()
 
-    return validated
+    return firstResult && firstResult.is_active
   }
 }
