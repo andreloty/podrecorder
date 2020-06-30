@@ -7,9 +7,7 @@ import Collapse from '@material-ui/core/Collapse'
 import Alert from '@material-ui/lab/Alert'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import Container from '@material-ui/core/Container'
 import { makeStyles } from '@material-ui/core/styles'
-import Copyright from '../Shared/copyright'
 import { useHistory, useParams } from 'react-router-dom'
 import dotenv from 'dotenv'
 import { validateSession } from '../../services/recording'
@@ -95,65 +93,62 @@ export default function Session () {
 
   return (
     <Box>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Collapse in={open}>
-          <Alert
-            severity="error"
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setOpen(false)
-                }}
-              >
-                <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-          >
-            {modalMsg}
-          </Alert>
-        </Collapse>
-        <div className={classes.paper}>
-          <form className={classes.form} onSubmit={handleSession} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="name"
-              label="Nome"
-              name="name"
-              autoComplete="name"
-              autoFocus
-              onChange={onChange}
-              value={user.name}
-              error={!formValid}
-              helperText="Todos os campos são obrigatórios!"
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="code"
-              label="Código"
-              name="code"
-              autoComplete="code"
-              onChange={onChange}
-              value={user.code}
-              error={!formValid}
-              helperText="Todos os campos são obrigatórios!"
-            />
-            <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
-              Participar da Gravação
-            </Button>
-          </form>
-        </div>
-        <Copyright />
-      </Container>
+      <CssBaseline />
+      <Collapse in={open}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false)
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {modalMsg}
+        </Alert>
+      </Collapse>
+      <div className={classes.paper}>
+        <form className={classes.form} onSubmit={handleSession} noValidate>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="name"
+            label="Nome"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            onChange={onChange}
+            value={user.name}
+            error={!formValid}
+            helperText="Todos os campos são obrigatórios!"
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="code"
+            label="Código"
+            name="code"
+            autoComplete="code"
+            onChange={onChange}
+            value={user.code}
+            error={!formValid}
+            helperText="Todos os campos são obrigatórios!"
+          />
+          <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
+            Participar da Gravação
+          </Button>
+        </form>
+      </div>
     </Box>
   )
 }

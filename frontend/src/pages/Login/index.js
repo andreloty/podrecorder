@@ -13,21 +13,20 @@ import Collapse from '@material-ui/core/Collapse'
 import Alert from '@material-ui/lab/Alert'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import Container from '@material-ui/core/Container'
+import Box from '@material-ui/core/Box'
 import { makeStyles } from '@material-ui/core/styles'
 import { useHistory } from 'react-router-dom'
-import Copyright from '../Shared/copyright'
 import AuthContext from '../../services/auth'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     '& .MuiTextField-root': {
-      margin: theme.spacing(1),
+      margin: theme.spacing(0),
       width: 200,
     },
   },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(0),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -38,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -100,7 +98,7 @@ export default function Login () {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Box>
       <CssBaseline />
       <Collapse in={open}>
         <Alert
@@ -137,7 +135,7 @@ export default function Login () {
             id="email"
             label="Email Address"
             name="email"
-            autoComplete="email"
+            autoComplete="off"
             autoFocus
             onChange={onChange}
             value={user.email}
@@ -153,7 +151,7 @@ export default function Login () {
             label="Password"
             type="password"
             id="password"
-            autoComplete="current-password"
+            autoComplete="off"
             onChange={onChange}
             value={user.password}
             error={!formValid}
@@ -177,7 +175,6 @@ export default function Login () {
           </Grid>
         </form>
       </div>
-      <Copyright />
-    </Container>
+    </Box>
   )
 }

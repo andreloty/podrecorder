@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Box, Typography } from '@material-ui/core'
+// import Typography from '@material-ui/core/Typography'
+import { Box } from '@material-ui/core'
 // import socket from '../../services/socket'
 import MicRecorder from 'mic-recorder-to-mp3'
 import dotenv from 'dotenv'
@@ -9,24 +10,26 @@ dotenv.config()
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
 
 export default function ActiveSession () {
-  const [isBlocked, setIsBlocked] = useState(true);
+
   const [recordingStatus, setRecordingStatus] = useState({
     isRecording: false,
-    blobURL: ''
+    blobURL: '',
+    isBlocked: false,
   });
 
   useEffect(() => {
     navigator.getUserMedia({ audio: true },
       () => {
         console.log('Permission Granted')
-        setIsBlocked(false)
+        recordingStatus.isBlocked = false
+        setRecordingStatus(recordingStatus)
       },
       () => {
         console.log('Permission Denied')
-        setIsBlocked(true)
+        setRecordingStatus(recordingStatus)
       },
     )
-  }, [])
+  }, [recordingStatus])
 
   const start = () => {
     if (recordingStatus.isBlocked) {
@@ -35,10 +38,8 @@ export default function ActiveSession () {
       Mp3Recorder
         .start()
         .then(() => {
-          setRecordingStatus({
-            ...recordingStatus,
-            isRecording: true,
-          })
+          recordingStatus.isRecording = true
+          setRecordingStatus(recordingStatus)
         }).catch((e) => console.error(e));
     }
   }
@@ -48,26 +49,18 @@ export default function ActiveSession () {
       .stop()
       .getMp3()
       .then(([buffer, blob]) => {
-        setRecordingStatus({
-          ...recordingStatus,
-          isRecording: false,
-          blobURL: URL.createObjectURL(blob)
-        })
+        recordingStatus.blobURL = URL.createObjectURL(blob)
+        recordingStatus.isRecording = false
+
+        setRecordingStatus(recordingStatus)
       }).catch((e) => console.log(e));
   };
 
   return (
-    <Container>
-      <Box visibility={isBlocked ? "visible" : "hidden"}>
-        <Typography>
-          Por favor, libere o acesso ao microfone!
-        </Typography>
-      </Box>
-      <Box visibility={isBlocked ? "hidden" : "visible"}>
-        <button onClick={start} disabled={recordingStatus.isRecording}>Record</button>
-        <button onClick={stop} disabled={!recordingStatus.isRecording}>Stop</button>
-        <audio src={recordingStatus.blobURL} controls="controls" />
-      </Box>
-    </Container>
+    <Box>
+      <button onClick={start} disabled={recordingStatus.isRecording}>Record</button>
+      <button onClick={stop}>Stop</button>
+      <audio src={recordingStatus.blobURL} controls="controls" />
+    </Box>
   )
 }

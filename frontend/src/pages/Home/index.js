@@ -3,9 +3,8 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import Grid from '@material-ui/core/Grid'
 import { useHistory } from 'react-router-dom'
-import Copyright from '../Shared/copyright'
 
-export default function Home() {
+export default function Home () {
   const history = useHistory()
 
   const login = (e) => {
@@ -21,7 +20,6 @@ export default function Home() {
       <Link href="#" onClick={login} variant="body2">
         Login
       </Link>
-      <Copyright />
     </Grid>
   )
 }

@@ -3,7 +3,6 @@ import Typography from '@material-ui/core/Typography'
 //import { useHistory } from 'react-router-dom'
 import AuthContext from '../../services/auth'
 import { getActiveSession } from '../../services/recording'
-import Copyright from '../Shared/copyright'
 import Logout from '../Shared/logout'
 import socket from '../../services/socket'
 import { Grid, Box } from '@material-ui/core'
@@ -24,10 +23,9 @@ export default function NewRecording () {
     code: '',
     session: '',
     url: ''
-  });
+  })
 
   useEffect(() => {
-
     const getSession = async () => {
       const resp = await getActiveSession()
 
@@ -41,7 +39,7 @@ export default function NewRecording () {
         setRoom({
           code: resp.data.code,
           session: resp.data.session,
-          url: `${process.env.REACT_APP_BASE_URL}/session/${resp.data.session}`
+          url: `${process.env.REACT_APP_URL}/session/${resp.data.session}`
         })
         setShowData('visible')
 
@@ -100,16 +98,25 @@ export default function NewRecording () {
     <Box visibility={showData}>
       <Grid container direction="column" justify="center" alignItems="center">
         {connectedText}
-        <Typography component="h5" variant="h5">
+        <Typography component="h5" variant="body1">
           <p>
-            Pessoas conectadas no momento: {users.length} <br />
-            Convidar pessoas:<br />
-            Sala: {room.url}<br />
-            Código: {room.code}</p>
+            Pessoas conectadas no momento: {users.length}
+          </p>
+          <p>
+            Para convidar pessoas, basta compartilhar o link e o código abaixo:
+          </p>
+          <p>
+            <strong>{room.url}</strong>
+          </p>
+          <p>
+            Código: <strong>{room.code}</strong>
+          </p>
+          <p>
+            Já estão na sala:
+          </p>
           <UserList users={users} />
         </Typography>
         <Logout />
-        <Copyright />
       </Grid>
     </Box>
   )

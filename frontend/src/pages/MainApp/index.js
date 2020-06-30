@@ -4,10 +4,9 @@ import Link from '@material-ui/core/Link'
 import Grid from '@material-ui/core/Grid'
 import { useHistory } from 'react-router-dom'
 import AuthContext from '../../services/auth'
-import Copyright from '../Shared/copyright'
 import Logout from '../Shared/logout'
 
-export default function MainApp() {
+export default function MainApp () {
   const history = useHistory()
   const { user } = useContext(AuthContext)
 
@@ -24,7 +23,6 @@ export default function MainApp() {
         Fazer uma nova gravação
       </Link>
       <Logout />
-      <Copyright />
     </Grid>
   )
 }
