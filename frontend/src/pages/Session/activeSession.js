@@ -8,15 +8,16 @@ dotenv.config()
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
 
-export default function ActiveSession () {
-  const [isBlocked, setIsBlocked] = useState(true);
+export default function ActiveSession() {
+  const [isBlocked, setIsBlocked] = useState(true)
   const [recordingStatus, setRecordingStatus] = useState({
     isRecording: false,
-    blobURL: ''
-  });
+    blobURL: '',
+  })
 
   useEffect(() => {
-    navigator.getUserMedia({ audio: true },
+    navigator.getUserMedia(
+      { audio: true },
       () => {
         console.log('Permission Granted')
         setIsBlocked(false)
@@ -24,49 +25,49 @@ export default function ActiveSession () {
       () => {
         console.log('Permission Denied')
         setIsBlocked(true)
-      },
+      }
     )
   }, [])
 
   const start = () => {
     if (recordingStatus.isBlocked) {
-      console.log('Permission Denied');
+      console.log('Permission Denied')
     } else {
-      Mp3Recorder
-        .start()
+      Mp3Recorder.start()
         .then(() => {
           setRecordingStatus({
             ...recordingStatus,
             isRecording: true,
           })
-        }).catch((e) => console.error(e));
+        })
+        .catch((e) => console.error(e))
     }
   }
 
   const stop = () => {
-    Mp3Recorder
-      .stop()
+    Mp3Recorder.stop()
       .getMp3()
       .then(([buffer, blob]) => {
         setRecordingStatus({
           ...recordingStatus,
           isRecording: false,
-          blobURL: URL.createObjectURL(blob)
+          blobURL: URL.createObjectURL(blob),
         })
-      }).catch((e) => console.log(e));
-  };
+      })
+      .catch((e) => console.log(e))
+  }
 
   return (
     <Container>
-      <Box visibility={isBlocked ? "visible" : "hidden"}>
-        <Typography>
-          Por favor, libere o acesso ao microfone!
-        </Typography>
+      <Box visibility={isBlocked ? 'visible' : 'hidden'}>
+        <Typography>Por favor, libere o acesso ao microfone!</Typography>
       </Box>
-      <Box visibility={isBlocked ? "hidden" : "visible"}>
-        <button onClick={start} disabled={recordingStatus.isRecording}>Record</button>
-        <button onClick={stop} disabled={!recordingStatus.isRecording}>Stop</button>
-        <audio src={recordingStatus.blobURL} controls="controls" />
+      <Box visibility={isBlocked ? 'hidden' : 'visible'}>
+        {/*
+          <button onClick={start} disabled={recordingStatus.isRecording}>Record</button>
+          <button onClick={stop} disabled={!recordingStatus.isRecording}>Stop</button>
+        */}
+        <audio visibility={recordingStatus.blobURL ? 'hidden' : 'visible'} src={recordingStatus.blobURL} controls="controls" />
       </Box>
     </Container>
   )

@@ -14,12 +14,17 @@ import Alert from '@material-ui/lab/Alert'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import { useHistory } from 'react-router-dom'
-import Copyright from '../Shared/copyright'
 import api from '../../services/api'
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    '& .MuiTextField-root': {
+      margin: theme.spacing(0),
+      width: 200,
+    },
+  },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(0),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -30,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -41,12 +45,13 @@ function initialState() {
   return { firstName: '', lastName: '', email: '', password: '' }
 }
 
-export default function Login() {
+export default function Sign() {
   const classes = useStyles()
 
   const [user, setUser] = useState(initialState)
   const [open, setOpen] = useState(false)
   const [modalMsg, setModalMsg] = useState('')
+  const [formValid, setFormValid] = useState(true)
 
   function onChange(e) {
     const { value, name } = e.target
@@ -66,19 +71,33 @@ export default function Login() {
 
   async function handleSignUp(e) {
     e.preventDefault()
+    setFormValid(e.currentTarget.reportValidity())
+
     try {
-      const response = await api.post('/api/v1/signup', {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        password: user.password,
-      })
+      if (!e.currentTarget.reportValidity()) {
+        setModalMsg('Todos os campos devem ser preenchidos!')
+        setOpen(true)
+        setTimeout(() => {
+          setOpen(false)
+        }, 5000)
+      } else {
+        const response = await api.post('/api/v1/signup', {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          password: user.password,
+        })
 
-      sessionStorage.setItem('token', response.token)
+        sessionStorage.setItem('token', response.token)
 
-      history.push('/app')
+        history.push('/app')
+      }
     } catch (error) {
-      setModalMsg(error)
+      if (error.message) {
+        setModalMsg(error.message)
+      } else {
+        setModalMsg(error)
+      }
       setOpen(true)
       setTimeout(() => {
         setOpen(false)
@@ -115,7 +134,7 @@ export default function Login() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} onSubmit={handleSignUp}>
+        <form className={classes.form} onSubmit={handleSignUp} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
@@ -128,6 +147,8 @@ export default function Login() {
             autoFocus
             onChange={onChange}
             value={user.firstName}
+            error={!formValid}
+            helperText="Todos os campos são obrigatórios!"
           />
           <TextField
             variant="outlined"
@@ -140,6 +161,8 @@ export default function Login() {
             autoComplete="text"
             onChange={onChange}
             value={user.lastName}
+            error={!formValid}
+            helperText="Todos os campos são obrigatórios!"
           />
           <TextField
             variant="outlined"
@@ -152,6 +175,8 @@ export default function Login() {
             autoComplete="email"
             onChange={onChange}
             value={user.email}
+            error={!formValid}
+            helperText="Todos os campos são obrigatórios!"
           />
           <TextField
             variant="outlined"
@@ -165,6 +190,8 @@ export default function Login() {
             autoComplete="current-password"
             onChange={onChange}
             value={user.password}
+            error={!formValid}
+            helperText="Todos os campos são obrigatórios!"
           />
           <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
             Registrar!
@@ -183,7 +210,6 @@ export default function Login() {
           </Grid>
         </form>
       </div>
-      <Copyright />
     </Container>
   )
 }

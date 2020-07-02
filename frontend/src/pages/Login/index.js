@@ -43,11 +43,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function initialState () {
+function initialState() {
   return { email: '', password: '', remember: '' }
 }
 
-export default function Login () {
+export default function Login() {
   const classes = useStyles()
   const { login } = useContext(AuthContext)
 
@@ -56,7 +56,7 @@ export default function Login () {
   const [modalMsg, setModalMsg] = useState('')
   const [formValid, setFormValid] = useState(true)
 
-  function onChange (e) {
+  function onChange(e) {
     let { value, name } = e.target
 
     setUser({
@@ -72,7 +72,7 @@ export default function Login () {
     history.push('/signup')
   }
 
-  async function handleLogin (e) {
+  async function handleLogin(e) {
     e.preventDefault()
     setFormValid(e.currentTarget.reportValidity())
 
@@ -89,7 +89,11 @@ export default function Login () {
         history.push('/app')
       }
     } catch (error) {
-      setModalMsg(error)
+      if (error.message) {
+        setModalMsg(error.message)
+      } else {
+        setModalMsg(error)
+      }
       setOpen(true)
       setTimeout(() => {
         setOpen(false)
