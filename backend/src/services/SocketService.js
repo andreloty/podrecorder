@@ -1,5 +1,5 @@
 module.exports = {
-  manageSocket (io, socket) {
+  manageSocket(io, socket) {
     socket.on('disconnect', () => {
       console.log('new user conected: ' + socket.id)
     })
@@ -8,9 +8,7 @@ module.exports = {
 
     socket.on('joinToSession', (room, guest) => {
       socket.join(room)
-      io
-        .to(room)
-        .emit('newGuestOn', guest)
+      io.to(room).emit('newGuestOn', guest)
     })
   }
 }

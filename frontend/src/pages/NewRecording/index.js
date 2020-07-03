@@ -1,28 +1,36 @@
 import React, { useContext, useState, useEffect } from 'react'
 import Typography from '@material-ui/core/Typography'
-//import { useHistory } from 'react-router-dom'
 import AuthContext from '../../services/auth'
 import { getActiveSession } from '../../services/recording'
 import Logout from '../Shared/logout'
 import socket from '../../services/socket'
 import { Grid, Box } from '@material-ui/core'
 import dotenv from 'dotenv'
+import { addToStorage } from '../../services/storage'
 
 dotenv.config()
 
-const connected = [<Typography component="h3" variant="h5" color="primary"><strong>Você está conectado.</strong></Typography>]
-const desconnected = [<Typography component="h3" variant="h5" color="error"><strong>Você está desconectado.</strong></Typography>]
+const connected = [
+  <Typography component="h3" variant="h5" color="primary">
+    <strong>Você está conectado.</strong>
+  </Typography>,
+]
+const desconnected = [
+  <Typography component="h3" variant="h5" color="error">
+    <strong>Você está desconectado.</strong>
+  </Typography>,
+]
 
-export default function NewRecording () {
-  //const history = useHistory()
+export default function NewRecording() {
   const { user } = useContext(AuthContext)
+  const userFullName = `${user.firstName} ${user.lastName}`.trim()
   const [connectedText, setConnectedText] = useState(desconnected)
-  const [showData, setShowData] = useState('hidden');
-  const [users, setUsers] = useState([user]);
+  const [showData, setShowData] = useState('hidden')
+  const [users, setUsers] = useState([userFullName])
   const [room, setRoom] = useState({
     code: '',
     session: '',
-    url: ''
+    url: '',
   })
 
   useEffect(() => {
@@ -32,27 +40,46 @@ export default function NewRecording () {
       if (resp.error) {
         setRoom({
           code: '',
-          url: ''
+          url: '',
         })
         setShowData('hidden')
       } else {
         setRoom({
           code: resp.data.code,
           session: resp.data.session,
-          url: `${process.env.REACT_APP_URL}/session/${resp.data.session}`
+          url: `${process.env.REACT_APP_URL}/session/${resp.data.session}`,
         })
         setShowData('visible')
 
-        joinToSession(room.session, user)
+        if (resp.data.session) {
+          addToStorage('sessionId', resp.data.session)
+          addToStorage('code', resp.data.code)
+          const username = `${user.firstName} ${user.lastName}`.trim()
+          joinToSession(resp.data.session, username)
+        }
       }
     }
 
     getSession()
+  }, [user])
 
-    socket.on('userConnected', () => {
-      joinToSession(room.session, user)
+  useEffect(() => {
+    socket.on('newGuestOn', (guest) => {
+      if (guest) {
+        const newUsers = [...users]
+        if (!users.find((v) => v === guest)) {
+          newUsers.push(guest)
+        }
+        setUsers(newUsers)
+        setConnectedText(connected)
+      }
     })
-  }, [room.session, user])
+  }, [users])
+
+  socket.on('userConnected', () => {
+    const username = `${user.firstName} ${user.lastName}`.trim()
+    joinToSession(room.session, username)
+  })
 
   const joinToSession = (session, user) => {
     if (session && user) {
@@ -64,31 +91,14 @@ export default function NewRecording () {
     setConnectedText(desconnected)
   })
 
-  socket.on('newGuestOn', (guest) => {
-    if (guest) {
-      if (users.find((v) => v.firstName !== user.firstName && v.lastName !== user.lastName)) {
-        users.push(guest)
-      }
-      setUsers(users)
-      setConnectedText(connected)
-    }
-  })
-
-  function ListItem (props) {
-    return <li>{props.value.firstName} {props.value.lastName}</li>;
+  function ListItem(props) {
+    return <li>{props.value}</li>
   }
 
-  function UserList (props) {
-    const users = props.users;
-    if (users && users.length > 0) {
-      const listItems = users.map((user, index) =>
-        <ListItem key={index} value={user} />
-      );
-      return (
-        <ol>
-          {listItems}
-        </ol>
-      );
+  function UserList(props) {
+    if (props.users && props.users.length > 0) {
+      const listItems = props.users.map((userListName, index) => [<ListItem key={index} value={userListName} />])
+      return <ol>{listItems}</ol>
     }
 
     return <br />
@@ -99,21 +109,15 @@ export default function NewRecording () {
       <Grid container direction="column" justify="center" alignItems="center">
         {connectedText}
         <Typography component="h5" variant="body1">
-          <p>
-            Pessoas conectadas no momento: {users.length}
-          </p>
-          <p>
-            Para convidar pessoas, basta compartilhar o link e o código abaixo:
-          </p>
+          <p>Pessoas conectadas no momento: {users.length}</p>
+          <p>Para convidar pessoas, basta compartilhar o link e o código abaixo:</p>
           <p>
             <strong>{room.url}</strong>
           </p>
           <p>
             Código: <strong>{room.code}</strong>
           </p>
-          <p>
-            Já estão na sala:
-          </p>
+          <p>Já estão na sala:</p>
           <UserList users={users} />
         </Typography>
         <Logout />

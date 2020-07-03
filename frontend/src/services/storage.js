@@ -1,14 +1,18 @@
 export const addToStorage = (key, value, isSession) => {
+  if (typeof value !== 'string') {
+    value = JSON.stringify(value)
+  }
   if (isSession) {
-    sessionStorage.setItem(key, JSON.stringify(value))
+    sessionStorage.setItem(key, value)
   } else {
-    localStorage.setItem(key, JSON.stringify(value))
+    localStorage.setItem(key, value)
   }
 }
 
-export const getFromStorage = (key) => {
-  const fromLocalStorage = localStorage.getItem(key)
-  const fromSessionStorage = sessionStorage.getItem(key)
+export const getFromStorage = (key, isJson = false) => {
+  const fromLocalStorage = isJson ? JSON.parse(localStorage.getItem(key)) : localStorage.getItem(key)
+
+  const fromSessionStorage = isJson ? JSON.parse(sessionStorage.getItem(key)) : sessionStorage.getItem(key)
 
   return fromLocalStorage ? fromLocalStorage : fromSessionStorage
 }

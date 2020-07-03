@@ -12,11 +12,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     function loadStorageData() {
       const storagedToken = getFromStorage('@PdR:token')
-      const storagedUser = getFromStorage('@PdR:user')
+      const storagedUser = getFromStorage('@PdR:user', true)
 
       if (storagedToken && storagedUser) {
         setToken(storagedToken)
-        setUser(JSON.parse(storagedUser))
+        setUser(storagedUser)
         setIsAuthenticated(true)
       }
     }
