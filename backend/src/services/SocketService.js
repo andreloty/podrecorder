@@ -10,5 +10,13 @@ module.exports = {
       socket.join(room)
       io.to(room).emit('newGuestOn', guest)
     })
+
+    socket.on('iniciarGravacao', (room) => {
+      io.to(room).emit('iniciarGravacao')
+    })
+
+    socket.on('finalizarGravacao', (room) => {
+      io.to(room).emit('finalizarGravacao')
+    })
   }
 }

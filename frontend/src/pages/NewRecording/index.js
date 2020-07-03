@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react'
-import Typography from '@material-ui/core/Typography'
 import AuthContext from '../../services/auth'
 import { getActiveSession } from '../../services/recording'
 import Logout from '../Shared/logout'
 import socket from '../../services/socket'
-import { Grid, Box } from '@material-ui/core'
+import { Button, Grid, Box, Typography } from '@material-ui/core'
 import dotenv from 'dotenv'
 import { addToStorage } from '../../services/storage'
+import MicRecorder from 'mic-recorder-to-mp3'
 
 dotenv.config()
 
@@ -21,16 +21,24 @@ const desconnected = [
   </Typography>,
 ]
 
+const Mp3Recorder = new MicRecorder({ bitRate: 128 })
+
 export default function NewRecording() {
   const { user } = useContext(AuthContext)
   const userFullName = `${user.firstName} ${user.lastName}`.trim()
   const [connectedText, setConnectedText] = useState(desconnected)
   const [showData, setShowData] = useState('hidden')
   const [users, setUsers] = useState([userFullName])
+  const [isBlocked, setIsBlocked] = useState(false)
+  const [textoBotao, setTextoBotao] = useState('Iniciar Gravação para Todos os Participantes.')
   const [room, setRoom] = useState({
     code: '',
     session: '',
     url: '',
+  })
+  const [recordingStatus, setRecordingStatus] = useState({
+    isRecording: false,
+    blobURL: '',
   })
 
   useEffect(() => {
@@ -63,7 +71,25 @@ export default function NewRecording() {
     getSession()
   }, [user])
 
+  const getUserMedia = () => {
+    navigator.getUserMedia(
+      { audio: true },
+      () => {
+        console.log('Permission Granted')
+        setIsBlocked(false)
+        setShowData('visible')
+      },
+      () => {
+        console.log('Permission Denied')
+        setIsBlocked(true)
+        setShowData('visible')
+      }
+    )
+  }
+
   useEffect(() => {
+    getUserMedia()
+
     socket.on('newGuestOn', (guest) => {
       if (guest) {
         const newUsers = [...users]
@@ -76,11 +102,6 @@ export default function NewRecording() {
     })
   }, [users])
 
-  socket.on('userConnected', () => {
-    const username = `${user.firstName} ${user.lastName}`.trim()
-    joinToSession(room.session, username)
-  })
-
   const joinToSession = (session, user) => {
     if (session && user) {
       socket.emit('joinToSession', session, user)
@@ -89,6 +110,11 @@ export default function NewRecording() {
 
   socket.on('disconnect', (guest) => {
     setConnectedText(desconnected)
+  })
+
+  socket.on('userConnected', () => {
+    const username = `${user.firstName} ${user.lastName}`.trim()
+    joinToSession(room.session, username)
   })
 
   function ListItem(props) {
@@ -104,10 +130,54 @@ export default function NewRecording() {
     return <br />
   }
 
+  const start = () => {
+    if (recordingStatus.isBlocked) {
+      console.log('Permission Denied')
+    } else {
+      Mp3Recorder.start()
+        .then(() => {
+          setRecordingStatus({
+            ...recordingStatus,
+            isRecording: true,
+          })
+        })
+        .catch((e) => console.error(e))
+    }
+  }
+
+  const stop = () => {
+    Mp3Recorder.stop()
+      .getMp3()
+      .then(([buffer, blob]) => {
+        setRecordingStatus({
+          ...recordingStatus,
+          isRecording: false,
+          blobURL: URL.createObjectURL(blob),
+        })
+      })
+      .catch((e) => console.log(e))
+  }
+
+  const gerenciarGravacao = () => {
+    if (!recordingStatus.isRecording) {
+      socket.emit('iniciarGravacao', room.session)
+      start()
+      setTextoBotao('Gravando... Finalizar Gravação de Todos os Participantes.')
+    } else {
+      socket.emit('finalizarGravacao', room.session)
+      stop()
+      setTextoBotao('Iniciar Gravação para Todos os Participantes.')
+    }
+  }
+
   return (
     <Box visibility={showData}>
       <Grid container direction="column" justify="center" alignItems="center">
         {connectedText}
+        <Box visibility={isBlocked ? 'visible' : 'hidden'}>
+          <Typography>Por favor, libere o acesso ao microfone!</Typography>
+          <Typography>Após a liberação, por favor atualize a página</Typography>
+        </Box>
         <Typography component="h5" variant="body1">
           <p>Pessoas conectadas no momento: {users.length}</p>
           <p>Para convidar pessoas, basta compartilhar o link e o código abaixo:</p>
@@ -120,6 +190,22 @@ export default function NewRecording() {
           <p>Já estão na sala:</p>
           <UserList users={users} />
         </Typography>
+        <Box>
+          <Button
+            type="button"
+            onClick={() => {
+              gerenciarGravacao()
+            }}
+            fullWidth
+            variant="contained"
+            color="primary"
+          >
+            {textoBotao}
+          </Button>
+        </Box>
+        <Box visibility={!recordingStatus.blobURL ? 'hidden' : 'visible'}>
+          <audio src={recordingStatus.blobURL} controls="controls" />
+        </Box>
         <Logout />
       </Grid>
     </Box>

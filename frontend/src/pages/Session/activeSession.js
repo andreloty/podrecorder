@@ -23,7 +23,7 @@ const Mp3Recorder = new MicRecorder({ bitRate: 128 })
 export default function ActiveSession() {
   const [connectedText, setConnectedText] = useState(desconnected)
   const [showData, setShowData] = useState('hidden')
-  const [isBlocked, setIsBlocked] = useState(true)
+  const [isBlocked, setIsBlocked] = useState(false)
   const [recordingStatus, setRecordingStatus] = useState({
     isRecording: false,
     blobURL: '',
@@ -35,7 +35,7 @@ export default function ActiveSession() {
     code: getFromStorage('code'),
   }
 
-  useEffect(() => {
+  const getUserMedia = () => {
     navigator.getUserMedia(
       { audio: true },
       () => {
@@ -49,6 +49,10 @@ export default function ActiveSession() {
         setShowData('visible')
       }
     )
+  }
+
+  useEffect(() => {
+    getUserMedia()
 
     joinToSession(session.sessionId, session.name)
   }, [session.name, session.sessionId])
@@ -65,6 +69,14 @@ export default function ActiveSession() {
 
   socket.on('newGuestOn', (guest) => {
     setConnectedText(connected)
+  })
+
+  socket.on('iniciarGravacao', () => {
+    start()
+  })
+
+  socket.on('finalizarGravacao', () => {
+    stop()
   })
 
   const start = () => {
@@ -101,6 +113,7 @@ export default function ActiveSession() {
         {connectedText}
         <Box visibility={isBlocked ? 'visible' : 'hidden'}>
           <Typography>Por favor, libere o acesso ao microfone!</Typography>
+          <Typography>Após a liberação, por favor atualize a página</Typography>
         </Box>
         <Box visibility={isBlocked ? 'hidden' : 'visible'}>
           {/*
